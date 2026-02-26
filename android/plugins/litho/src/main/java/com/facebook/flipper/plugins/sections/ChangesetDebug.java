@@ -257,6 +257,7 @@ public class ChangesetDebug implements ChangesetDebugListener {
   }
 
   /** For a given DiffSectionSpec section, returns the list of data on which it performs diffing. */
+  @SuppressLint("NewApi")
   private static List getDataFromPreviousSection(Section previousSection) {
     List data = new ArrayList();
 
@@ -277,7 +278,7 @@ public class ChangesetDebug implements ChangesetDebugListener {
         field.setAccessible(true);
         data.add(field.get(previousSection));
       }
-    } catch (@SuppressLint("NewApi") NoSuchFieldException | IllegalAccessException e) {
+    } catch (NoSuchFieldException | IllegalAccessException e) {
       e.printStackTrace();
     }
 

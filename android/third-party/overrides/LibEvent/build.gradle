@@ -18,7 +18,7 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
         externalNativeBuild {
             cmake {
-                arguments '-DANDROID_TOOLCHAIN=clang'
+                arguments '-DANDROID_TOOLCHAIN=clang', "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
             }
         }
     }

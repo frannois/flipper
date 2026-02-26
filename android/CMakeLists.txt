@@ -50,7 +50,6 @@ set(libfolly_build_DIR ${build_DIR}/libfolly/${ANDROID_ABI})
 
 file(MAKE_DIRECTORY ${build_DIR})
 find_package(fbjni REQUIRED CONFIG)
-find_package(openssl REQUIRED CONFIG)
 
 add_subdirectory(${libflipper_DIR} ${libflipper_build_DIR})
 target_include_directories(${PACKAGE_NAME} PRIVATE

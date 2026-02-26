@@ -11,7 +11,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 // Increment this when making changes to any of the native
 // dependencies.
 // !!!
-final def CACHE_REVISION = 31
+final def CACHE_REVISION = 36
 
 final def externalDir = new File("$projectDir/external")
 final def downloadsDir = new File("$externalDir/downloads")
@@ -192,7 +192,48 @@ task finalizeFolly(dependsOn: [finalizeFollyWithDemangle, finalizeFollyWithFileU
     onlyIf { isCacheOutOfDate(CACHE_REVISION) }
 }
 
-task writeCacheRevision(dependsOn: [finalizeFolly]) {
+task downloadOpenSSL(dependsOn: createNativeDepsDirectories, type: Download) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
+    src 'https://github.com/openssl/openssl/releases/download/OpenSSL_1_1_1w/openssl-1.1.1w.tar.gz'
+    onlyIfNewer true
+    overwrite false
+    dest new File(downloadsDir, 'openssl-' + getDownloadFileName(src))
+}
+
+task prepareOpenSSL(dependsOn: [downloadOpenSSL], type: Copy) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
+    from tarTree(downloadOpenSSL.dest)
+    from './overrides/OpenSSL/'
+    include 'openssl-1.1.1w/**/*', 'CMakeLists.txt', 'opensslconf.h', 'bn_conf.h', 'dso_conf.h', 'buildinf.h'
+    includeEmptyDirs = false
+    into "$externalDir/OpenSSL"
+}
+
+task finalizeOpenSSLConf(dependsOn: [prepareOpenSSL], type: Copy) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
+    from './overrides/OpenSSL/'
+    include 'opensslconf.h'
+    into "$externalDir/OpenSSL/openssl-1.1.1w/include/openssl/"
+}
+
+task finalizeOpenSSLCryptoHeaders(dependsOn: [prepareOpenSSL], type: Copy) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
+    from './overrides/OpenSSL/'
+    include 'bn_conf.h', 'dso_conf.h'
+    into "$externalDir/OpenSSL/openssl-1.1.1w/include/crypto/"
+}
+
+task finalizeOpenSSLBuildinf(dependsOn: [prepareOpenSSL], type: Copy) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
+    from './overrides/OpenSSL/'
+    include 'buildinf.h'
+    into "$externalDir/OpenSSL/openssl-1.1.1w/crypto/"
+}
+
+task finalizeOpenSSL(dependsOn: [finalizeOpenSSLConf, finalizeOpenSSLCryptoHeaders, finalizeOpenSSLBuildinf]) {
+}
+
+task writeCacheRevision(dependsOn: [finalizeFolly, finalizeOpenSSL]) {
     doLast {
         buildDir.mkdirs()
         revisionFile.text = CACHE_REVISION.toString()
