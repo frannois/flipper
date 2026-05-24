@@ -8,6 +8,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'org.jetbrains.kotlin.plugin.compose' version '2.0.0'
 }
 
 android {
@@ -17,7 +18,7 @@ android {
     ndkVersion rootProject.ndkVersion
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion rootProject.minSdkVersion
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         applicationId 'com.facebook.flipper.sample'
         targetSdkVersion rootProject.targetSdkVersion
@@ -46,18 +47,25 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "$COMPOSE_COMPILER_VERSION"
     }
+    
+    composeCompiler {
+        enableStrongSkippingMode = true
+    }
+
+    compileOptions {
+        targetCompatibility rootProject.javaTargetVersion
+        sourceCompatibility rootProject.javaTargetVersion
+    }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = rootProject.kotlinJvmTarget
     }
 
     packagingOptions {
-        pickFirst "**/libcrypto.so"
         pickFirst "**/libevent-2.1.so"
         pickFirst "**/libevent_core-2.1.so"
         pickFirst "**/libevent_extra-2.1.so"
         pickFirst "**/libflipper.so"
-        pickFirst "**/libssl.so"
     }
 }
 

@@ -51,6 +51,8 @@ class FlipperClientImpl implements FlipperClient {
 
   public static native FlipperClientImpl getInstance();
 
+  public static native boolean isConnected();
+
   @Override
   public void addPlugin(FlipperPlugin plugin) {
     mClassIdentifierMap.put(plugin.getClass(), plugin.getId());
@@ -89,8 +91,7 @@ class FlipperClientImpl implements FlipperClient {
   @Override
   public native void stop();
 
-  @Override
-  public native boolean isConnected();
+
 
   @Override
   public native void subscribeForUpdates(FlipperStateUpdateListener stateListener);

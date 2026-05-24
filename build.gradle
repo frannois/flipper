@@ -1,3 +1,5 @@
+import com.android.build.gradle.tasks.JavaDocGenerationTask
+
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -11,8 +13,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.2.1'
-        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.25.3'
+        classpath 'com.android.tools.build:gradle:8.13.0'
+        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.34.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$KOTLIN_VERSION"
     }
@@ -20,7 +22,7 @@ buildscript {
 
 plugins {
     id 'de.undercouch.download' version '5.6.0'
-    id 'com.github.ben-manes.versions' version '0.47.0'
+    id 'com.github.ben-manes.versions' version '0.53.0'
 }
 
 ext.isSnapshot = { VERSION_NAME.endsWith('-SNAPSHOT') }
@@ -38,22 +40,23 @@ subprojects {
     }
 
     // We don't build Javadoc at this time.
-    tasks.withType(Javadoc).all {
+    tasks.withType(Javadoc).configureEach {
         enabled = false
     }
 
-    tasks.withType(com.android.build.gradle.tasks.JavaDocGenerationTask).all {
+    tasks.withType(JavaDocGenerationTask).configureEach {
         enabled = false
     }
 }
 
 ext {
-    minSdkVersion = 15
-    targetSdkVersion = 34
-    compileSdkVersion = 34
-    buildToolsVersion = "33.0.2"
-    ndkVersion = "25.1.8937393"
+    minSdkVersion = 21
+    targetSdkVersion = 35
+    compileSdkVersion = 35
+    buildToolsVersion = "35.0.0"
+    ndkVersion = "28.2.13676358"
     javaTargetVersion = JavaVersion.VERSION_17
+    kotlinJvmTarget = "17"
 }
 
 ext.deps = [
@@ -81,7 +84,6 @@ ext.deps = [
         curtains           : 'com.squareup.curtains:curtains:1.2.5',
         // Third-party
         websocket          : 'org.java-websocket:Java-WebSocket:1.5.4',
-        openssl            : 'com.android.ndk.thirdparty:openssl:1.1.1l-beta-1',
         // Annotations
         kotlinxSerializationJson :  "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3",
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.2',

@@ -18,6 +18,7 @@ set(BOOST_DIR ../boost/boost_1_63_0/)
 set(GLOG_DIR ../glog/)
 set(LIBEVENT_DIR ../LibEvent/libevent-2.1.11-stable/)
 set(DOUBLECONVERSION_DIR ../double-conversion/double-conversion-3.0.0/)
+set(OPENSSL_DIR ../OpenSSL/)
 
 list(APPEND dir_list ${BOOST_DIR})
 list(APPEND dir_list ${BOOST_DIR}/../)
@@ -118,19 +119,25 @@ set(doubleconversion_build_DIR ${build_DIR}/doubleconversion/${ANDROID_ABI})
 set(libevent_build_DIR ${build_DIR}/libevent/${ANDROID_ABI})
 
 
+set(openssl_build_DIR ${build_DIR}/openssl/${ANDROID_ABI})
+
 file(MAKE_DIRECTORY ${build_DIR})
-find_package(openssl REQUIRED CONFIG)
+
+# Force _GNU_SOURCE for Android cross-compilation (libevent's check fails)
+set(_GNU_SOURCE TRUE CACHE BOOL "Has _GNU_SOURCE" FORCE)
 
 add_subdirectory(${GLOG_DIR} ${libglog_build_DIR})
 add_subdirectory(${DOUBLECONVERSION_DIR} ${doubleconversion_build_DIR})
 add_subdirectory(${LIBEVENT_DIR} ${libevent_build_DIR})
+add_subdirectory(${OPENSSL_DIR} ${openssl_build_DIR})
 target_include_directories(${PACKAGE_NAME} PRIVATE
     ${BOOST_DIR}
     ${BOOST_DIR}/../
     ${GLOG_DIR}/../
     ${GLOG_DIR}/glog-0.3.5/src/
-    ${DOUBLECONVERSION_DIR})
+    ${DOUBLECONVERSION_DIR}
+    ${OPENSSL_DIR}/openssl-1.1.1w/include)
 
 install(TARGETS ${PACKAGE_NAME}  DESTINATION ./build/)
 
-target_link_libraries(${PACKAGE_NAME} glog double-conversion openssl::ssl openssl::crypto event event_extra event_core)
+target_link_libraries(${PACKAGE_NAME} glog double-conversion ssl crypto event event_extra event_core)

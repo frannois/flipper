@@ -258,7 +258,9 @@ class JFlipperWebSocket : public facebook::flipper::FlipperSocket {
   JFlipperWebSocket(
       facebook::flipper::FlipperConnectionEndpoint endpoint,
       std::unique_ptr<facebook::flipper::FlipperSocketBasePayload> payload)
-      : endpoint_(std::move(endpoint)), payload_(std::move(payload)) {}
+      : endpoint_(std::move(endpoint)),
+        payload_(std::move(payload)),
+        connectionContextStore_(nullptr) {}
   JFlipperWebSocket(
       facebook::flipper::FlipperConnectionEndpoint endpoint,
       std::unique_ptr<facebook::flipper::FlipperSocketBasePayload> payload,
@@ -315,7 +317,7 @@ class JFlipperWebSocket : public facebook::flipper::FlipperSocket {
           if (secure) {
             auto certificate = store->getCertificate();
             if (certificate.first.length() == 0) {
-              return JFlipperObject::create(nullptr);
+              return JFlipperObject::create(folly::dynamic::object());
             }
             object_["certificates_client_path"] = certificate.first;
             object_["certificates_client_pass"] = certificate.second;
@@ -794,7 +796,7 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
     }
   }
 
-  bool isConnected() {
+  static bool isConnected(jni::alias_ref<jclass>) {
     try {
       return FlipperClient::instance()->isConnected();
     } catch (const std::exception& e) {

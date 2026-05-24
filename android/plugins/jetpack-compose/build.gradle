@@ -25,6 +25,10 @@ android {
         sourceCompatibility rootProject.javaTargetVersion
     }
 
+    kotlinOptions {
+        jvmTarget = rootProject.kotlinJvmTarget
+    }
+
     dependencies {
         implementation project(':android')
         implementation "androidx.compose.ui:ui:$COMPOSE_VERSION"

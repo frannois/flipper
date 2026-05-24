@@ -20,7 +20,7 @@ android {
         buildConfigField "boolean", "IS_ASAN_BUILD", 'false'
         externalNativeBuild {
             cmake {
-                arguments '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=c++_shared'
+                arguments '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=c++_shared', "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
             }
         }
     }
@@ -41,13 +41,8 @@ android {
         }
     }
 
-    buildFeatures {
-        prefab true
-    }
-
     dependencies {
         implementation project(':glog')
         implementation project(':doubleconversion')
-        implementation deps.openssl
     }
 }

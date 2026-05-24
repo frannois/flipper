@@ -24,6 +24,10 @@ android {
         sourceCompatibility rootProject.javaTargetVersion
     }
 
+    kotlinOptions {
+        jvmTarget = rootProject.kotlinJvmTarget
+    }
+
     dependencies {
         implementation "org.jetbrains.kotlin:kotlin-stdlib:$KOTLIN_VERSION"
         implementation project(':android')

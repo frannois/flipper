@@ -20,6 +20,7 @@
 #include <array>
 #include <cstring>
 #include <stdexcept>
+#include "Log.h"
 
 namespace facebook {
 namespace flipper {
@@ -289,8 +290,18 @@ bool generateCertPKCS12(
   OpenSSL_add_all_algorithms();
   ERR_load_crypto_strings();
 
+  auto logSslErrors = []() {
+    unsigned long err;
+    while ((err = ERR_get_error()) != 0) {
+      char buf[256];
+      ERR_error_string_n(err, buf, sizeof(buf));
+      log(std::string("OpenSSL error: ") + buf);
+    }
+  };
+
   BIO* privateKeyBio = bioFromFile(keyFilepath);
   if (privateKeyBio == nullptr) {
+    log(std::string("PKCS12: failed to read private key file: ") + keyFilepath);
     generateCertPKCS12_free(
         cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
     return false;
@@ -298,6 +309,8 @@ bool generateCertPKCS12(
 
   if (!(cert_privkey =
             PEM_read_bio_PrivateKey(privateKeyBio, NULL, NULL, NULL))) {
+    log("PKCS12: failed to parse private key PEM");
+    logSslErrors();
     BIO_free(privateKeyBio);
     generateCertPKCS12_free(
         cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
@@ -307,6 +320,7 @@ bool generateCertPKCS12(
   // Load the certificate
   BIO* certificateBio = bioFromFile(certFilepath);
   if (certificateBio == nullptr) {
+    log(std::string("PKCS12: failed to read cert file: ") + certFilepath);
     BIO_free(privateKeyBio);
     generateCertPKCS12_free(
         cacert, cert, cert_privkey, cacertstack, pkcs12bundle);
@@ -314,6 +328,8 @@ bool generateCertPKCS12(
   }
 
   if (!(cert = PEM_read_bio_X509(certificateBio, NULL, NULL, NULL))) {
+    log("PKCS12: failed to parse certificate PEM");
+    logSslErrors();
     BIO_free(privateKeyBio);
     BIO_free(certificateBio);
     generateCertPKCS12_free(
@@ -324,6 +340,7 @@ bool generateCertPKCS12(
   // Load the CA certificate who signed it
   BIO* cacertBio = bioFromFile(cacertFilepath);
   if (cacertBio == nullptr) {
+    log(std::string("PKCS12: failed to read CA cert file: ") + cacertFilepath);
     BIO_free(privateKeyBio);
     BIO_free(certificateBio);
     generateCertPKCS12_free(
@@ -332,6 +349,8 @@ bool generateCertPKCS12(
   }
 
   if (!(cacert = PEM_read_bio_X509(cacertBio, NULL, NULL, NULL))) {
+    log("PKCS12: failed to parse CA certificate PEM");
+    logSslErrors();
     BIO_free(cacertBio);
     BIO_free(privateKeyBio);
     BIO_free(certificateBio);
@@ -342,6 +361,7 @@ bool generateCertPKCS12(
 
   // Load the CA certificate on the stack
   if ((cacertstack = sk_X509_new_null()) == NULL) {
+    log("PKCS12: failed to create X509 stack");
     BIO_free(cacertBio);
     BIO_free(privateKeyBio);
     BIO_free(certificateBio);
@@ -367,6 +387,8 @@ bool generateCertPKCS12(
   );
 
   if (pkcs12bundle == nullptr) {
+    log("PKCS12: PKCS12_create failed");
+    logSslErrors();
     BIO_free(cacertBio);
     BIO_free(privateKeyBio);
     BIO_free(certificateBio);
