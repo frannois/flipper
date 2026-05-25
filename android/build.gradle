@@ -30,7 +30,7 @@ android {
 
         externalNativeBuild {
             cmake {
-                arguments '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=c++_shared'
+                arguments '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=c++_shared', "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
                 targets 'flipper'
             }
         }
@@ -53,6 +53,10 @@ android {
         sourceCompatibility rootProject.javaTargetVersion
     }
 
+    kotlinOptions {
+        jvmTarget = rootProject.kotlinJvmTarget
+    }
+
     buildFeatures {
         prefab true
     }
@@ -73,7 +77,6 @@ android {
         implementation deps.kotlinStdLibrary
 
         implementation deps.kotlinCoroutinesAndroid
-        implementation deps.openssl
         implementation deps.fbjni
         implementation deps.soloader
         implementation deps.curtains

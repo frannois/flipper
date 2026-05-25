@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -34,12 +32,12 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.debugInspectorInfo
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-@Preview
 @Composable
 fun Counter(complexParameter: ComplexParameter) {
   var count: Int by remember { mutableIntStateOf(0) }
@@ -75,7 +73,8 @@ fun Counter(complexParameter: ComplexParameter) {
           },
           dialogTitle = "Alert dialog example",
           dialogText = "This is an example of an alert dialog with buttons.",
-          icon = Icons.Default.Info)
+          icon =  ImageVector.vectorResource(R.drawable.ic_launcher)
+          )
     }
   }
 }

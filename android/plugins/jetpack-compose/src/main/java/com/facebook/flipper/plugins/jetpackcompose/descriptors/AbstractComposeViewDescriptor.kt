@@ -7,6 +7,7 @@
 
 package com.facebook.flipper.plugins.jetpackcompose.descriptors
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Debug
 import android.util.Log
@@ -40,6 +41,7 @@ object AbstractComposeViewDescriptor : ChainedDescriptor<AbstractComposeView>() 
 
   override fun onGetName(node: AbstractComposeView): String = node.javaClass.simpleName
 
+  @SuppressLint("NewApi")
   private fun transform(
       view: View,
       nodes: List<InspectorNode>,

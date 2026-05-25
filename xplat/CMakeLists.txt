@@ -15,7 +15,7 @@ set(glog_DIR ${external_DIR}/glog)
 set(BOOST_DIR ${external_DIR}/boost/boost_1_63_0/)
 set(LIBEVENT_DIR ${external_DIR}/LibEvent/libevent-2.1.11-stable/)
 set(DOUBLECONVERSION_DIR ${external_DIR}/double-conversion/double-conversion-3.0.0/)
-set(OPENSSL_DIR ${external_DIR}/OpenSSL/openssl-1.1.1k/)
+set(OPENSSL_DIR ${external_DIR}/OpenSSL/openssl-1.1.1w/)
 
 list(APPEND dir_list ./)
 list(APPEND dir_list ./Flipper)
@@ -40,8 +40,6 @@ add_compile_options(-DFOLLY_NO_CONFIG
                     -Wno-tautological-constant-compare
                     )
 
-find_package(openssl REQUIRED CONFIG)
-
 file(GLOB SOURCES Flipper/*.cpp)
 add_library(${PACKAGE_NAME} STATIC ${SOURCES})
 
@@ -65,4 +63,4 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
         ${glog_DIR}/glog-0.3.5/src/
     )
 
-target_link_libraries(${PACKAGE_NAME} folly glog double-conversion log event openssl::ssl openssl::crypto)
+target_link_libraries(${PACKAGE_NAME} folly glog double-conversion log event)
